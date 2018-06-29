@@ -49,3 +49,5 @@ LAYOUT_LOCATION(10) out HIGHP vec4 vertex_uv01;
 #if defined(HAS_SHADOWING) && defined(HAS_DIRECTIONAL_LIGHTING)
 LAYOUT_LOCATION(11) out HIGHP vec4 vertex_lightSpacePosition;
 #endif
+
+LAYOUT_LOCATION(12) out HIGHP float vertex_positionZ;

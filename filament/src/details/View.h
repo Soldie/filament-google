@@ -229,7 +229,9 @@ private:
     Handle<HwSamplerBuffer> mPerViewSbh;
     Handle<HwUniformBuffer> mPerViewUbh;
 
+public:
     UniformBuffer& getUb() const noexcept { return mPerViewUb; }
+private:
     Handle<HwUniformBuffer> getUbh() const noexcept { return mPerViewUbh; }
 
     SamplerBuffer& getUs() const noexcept { return mPerViewSb; }

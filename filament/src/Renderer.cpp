@@ -160,6 +160,7 @@ void FRenderer::renderJob(ArenaScope& arena, FView* view) {
         recordHighWatermark(commands); // for debugging
         // reset the command buffer
         commands.clear();
+        view->getUb().setUniform(offsetof(FEngine::PerViewUib, padding1), -1.0f);
     }
 
     /*

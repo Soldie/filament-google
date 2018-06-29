@@ -285,6 +285,8 @@ void FView::prepareShadowing(FEngine& engine, driver::DriverApi& driver,
             mat4f const& lightFromWorldMatrix = shadowMap.getLightSpaceMatrix();
             u.setUniform(offsetof(FEngine::PerViewUib, lightFromWorldMatrix), lightFromWorldMatrix);
 
+            u.setUniform(offsetof(FEngine::PerViewUib, padding1), 1.0f);
+
             // the 2x bias is needed in opengl because the depth maps to -1/1. It may not be
             // needed with other APIs, but at least it won't worsen the acnee there.
             const float sceneRange = shadowMap.getSceneRange();
@@ -616,7 +618,7 @@ UTILS_NOINLINE
 void FView::prepareVisibleRenderables(JobSystem& js,
         FScene::RenderableSoa& renderableData) const noexcept {
     SYSTRACE_CALL();
-    if (UTILS_LIKELY(isCullingEnabled())) {
+    if (false && UTILS_LIKELY(isCullingEnabled())) {
         cullRenderables(js, renderableData, mCullingFrustum, VISIBLE_RENDERABLE_BIT);
     } else {
         std::fill(renderableData.begin<FScene::VISIBLE_MASK>(),

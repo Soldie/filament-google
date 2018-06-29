@@ -35,7 +35,7 @@ using namespace driver;
 namespace details {
 
 // do this only if depth-clamp is available
-static constexpr bool USE_DEPTH_CLAMP = false;
+static constexpr bool USE_DEPTH_CLAMP = true;
 
 // currently disabled because it creates shadow acnee problems at a distance
 static constexpr bool ENABLE_LISPSM = true;
@@ -272,6 +272,10 @@ void ShadowMap::computeShadowCameraDirectional(
                 // further tighten to the shadow receiver volume
                 lsLightFrustum.max.z = std::max(lsLightFrustum.max.z, v.z);
             }
+        }
+        if (USE_DEPTH_CLAMP) {
+            // near: farthest of the closest shadow casters and receivers
+            lsLightFrustum.max.z = std::min(lsLightFrustum.max.z, nearFar[0]);
         }
         if (mEngine.debug.shadowmap.far_uses_shadowcasters) {
             // far: closest of the farthest shadow casters and receivers

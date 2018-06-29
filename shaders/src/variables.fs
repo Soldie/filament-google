@@ -31,4 +31,6 @@ LAYOUT_LOCATION(10) in HIGHP vec4 vertex_uv01;
 LAYOUT_LOCATION(11) in HIGHP vec4 vertex_lightSpacePosition;
 #endif
 
+LAYOUT_LOCATION(12) in HIGHP float vertex_positionZ;
+
 layout(location = 0) out vec4 fragColor;
