@@ -52,8 +52,11 @@ LinearImage transpose(const LinearImage& image);
 // The boundary is specified as Left Top Right Bottom.
 LinearImage cropRegion(const LinearImage& image, uint32_t l, uint32_t t, uint32_t r, uint32_t b);
 
-// Lexicographically compares two images, similar to memcmp.
-int compare(const LinearImage& a, const LinearImage& b, float epsilon = 0.0f);
+// Generates a new image where each value is no lower than minval and no higher than maxval.
+LinearImage clamp(const LinearImage& image, float minval, float maxval);
+
+// Simple RGB comparison of two images, returns true if they differ.
+bool compare(const LinearImage& a, const LinearImage& b, float epsilon = 0.0f);
 
 } // namespace image
 

@@ -22,6 +22,13 @@
 #include <algorithm>
 
 using namespace math;
+using namespace utils;
+
+#if defined(NDEBUG)
+    #define VERBOSE 0
+#else
+    #define VERBOSE 1
+#endif
 
 namespace image {
 
@@ -210,17 +217,45 @@ LinearImage cropRegion(const LinearImage& image, uint32_t left, uint32_t top, ui
     return result;
 }
 
-int compare(const LinearImage& a, const LinearImage& b, float epsilon) {
+LinearImage clamp(const LinearImage& image, float minval, float maxval) {
+    const uint32_t width = image.getWidth(), height = image.getHeight();
+    const uint32_t ncomp = image.getChannels();
+    LinearImage result(width, height, ncomp);
+    auto src = image.getPixelRef();
+    auto dst = result.getPixelRef();
+    for (uint32_t n = 0, nvals = width * height * ncomp; n < nvals; ++n) {
+        dst[n] = std::min(maxval, std::max(minval, src[n]));
+    }
+    return result;
+}
+
+bool compare(const LinearImage& a, const LinearImage& b, float epsilon) {
     auto w = a.getWidth();
     auto h = a.getHeight();
     auto c = a.getChannels();
     if (b.getWidth() != w || b.getHeight() != h || b.getChannels() != c) {
-        return -1;
+#if VERBOSE
+        slog.e << "Dimension mismatch" << io::endl;
+#endif
+        return true;
     }
-    float const* adata = a.getPixelRef();
-    float const* bdata = b.getPixelRef();
-    return std::lexicographical_compare(adata, adata + w * h * c, bdata, bdata + w * h * c,
-            [epsilon](float x, float y) { return x < y - epsilon; });
+    for (uint32_t row = 0; row < h; ++row) {
+        for (uint32_t col = 0; col < w; ++col) {
+            float const* apixel = a.getPixelRef(col, row);
+            float const* bpixel = b.getPixelRef(col, row);
+            for (uint32_t channel = 0; channel < c; ++channel) {
+                float delta = std::abs(apixel[channel] - bpixel[channel]);
+                if (delta > epsilon) {
+#if VERBOSE
+                    slog.e << "Mismatch at " << col << "," << row << "," << channel << io::endl;
+                    slog.e << apixel[channel] << " vs " << bpixel[channel] << io::endl;
+#endif
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 } // namespace image

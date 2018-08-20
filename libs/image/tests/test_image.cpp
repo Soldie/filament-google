@@ -431,7 +431,7 @@ static LinearImage createColorFromAscii(const string& pattern) {
 }
 
 static void updateOrCompare(const LinearImage& limg, const utils::Path& fname) {
-    image::updateOrCompare(limg, g_comparisonPath + fname, g_comparisonMode, 0.0f);
+    image::updateOrCompare(limg, g_comparisonPath + fname, g_comparisonMode, 0.01f);
 }
 
 static bool solve(float a, float b, float c, float *x0, float *x1) {
