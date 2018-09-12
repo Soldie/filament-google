@@ -33,6 +33,8 @@
 
 #include <math/vec3.h>
 
+#include <chrono>
+
 using namespace filament;
 using namespace math;
 using namespace std;
@@ -88,6 +90,7 @@ static Texture* setTextureParameter(Engine& engine, filaweb::Asset& asset, strin
 }
 
 void setup(Engine* engine, View* view, Scene* scene) {
+    using namespace chrono;
 
     // Create material.
     app.mat = Material::Builder()
@@ -99,11 +102,19 @@ void setup(Engine* engine, View* view, Scene* scene) {
     // Move raw asset data from JavaScript to C++ static storage. Their held data will be freed via
     // BufferDescriptor callbacks after Filament creates the corresponding GPU objects.
     static auto mesh = filaweb::getRawFile("mesh");
+
+    auto begin_ms = system_clock::now().time_since_epoch() / milliseconds(1);
+    printf("Starting texture decode...\n");
+
     static auto albedo = filaweb::getTexture("albedo");
     static auto metallic = filaweb::getTexture("metallic");
     static auto roughness = filaweb::getTexture("roughness");
     static auto normal = filaweb::getTexture("normal");
     static auto ao = filaweb::getTexture("ao");
+    auto skylight = filaweb::getSkyLight(*engine, "syferfontein_18d_clear_2k");
+
+    auto end_ms = system_clock::now().time_since_epoch() / milliseconds(1);
+    printf("Total decode time %fs\n", (end_ms - begin_ms) / 1000.0);
 
     // Create mesh.
     printf("%s: %d bytes\n", "mesh", mesh.nbytes);
@@ -171,7 +182,6 @@ void setup(Engine* engine, View* view, Scene* scene) {
     scene->addEntity(app.ptlight[3]);
 
     // Create skybox and image-based light source.
-    auto skylight = filaweb::getSkyLight(*engine, "syferfontein_18d_clear_2k");
     scene->setIndirectLight(skylight.indirectLight);
     scene->setSkybox(skylight.skybox);
     skylight.indirectLight->setRotation(
