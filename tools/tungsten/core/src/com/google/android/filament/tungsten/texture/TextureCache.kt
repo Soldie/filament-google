@@ -56,6 +56,14 @@ object TextureCache {
         return futureTexture
     }
 
+    /*
+     * Keep track of texture and delete when Filament shutdownAndDestroyTextures is called.
+     */
+    fun addTextureForRemoval(texture: Texture) {
+        Filament.getInstance().assertIsFilamentThread()
+        textures.add(texture)
+    }
+
     /**
      * Delete all cached textures and disallow any additional texture caching.
      */
@@ -72,7 +80,7 @@ object TextureCache {
         val futureTexture = FutureTexture()
         Filament.getInstance().runOnFilamentThread { engine ->
             if (!allowNewTextures) return@runOnFilamentThread
-            val texture = TextureUtils.loadTexture(engine, imageSource)
+            val texture = TextureUtils.loadTextureFromFile(engine, imageSource)
             if (texture != null) {
                 futureTexture.complete(texture)
                 textures.add(texture)
